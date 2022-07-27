@@ -1,12 +1,12 @@
-const express = require(express)
+const express = require("express")
 
 const UserCtrl = require("../controllers/user-ctrl")
 
-const router = express.Router()
+const router = express.Router();
 
-router.post("/userLogin",UserCtrl.userLogin)
-router.post("/userRegister",UserCtrl.userRegister)
+router.post("/userLogin",UserCtrl.login);
+router.post("/userRegister",UserCtrl.register);
 router.get("/viewMenu",UserCtrl.getMenu);
-router.post("/placeOrder",UserCtrl.placeOrder);
+router.get("/placeOrder",UserCtrl.placeOrder);
 
 module.exports = router;

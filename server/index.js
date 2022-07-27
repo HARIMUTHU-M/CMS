@@ -16,8 +16,8 @@ app.get("/",(req,res) => {
     res.send("Hello World")
 })
 
-app.use("/admin-api",adminRouter)
-app.use("/user-api",userRouter)
+app.use("/adminApi",adminRouter)
+app.use("/userApi",userRouter)
 
 app.listen(5000,()=>{
     console.log("Server started at port 5000");

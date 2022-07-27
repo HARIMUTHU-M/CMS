@@ -16,7 +16,6 @@ const MenuModel = new Schema(
             required: true
         }
     },
-    { timestamps: true },
 )
 
 module.exports = mongoose.model('menu', MenuModel);

@@ -1,8 +1,9 @@
 const UserModel = require('../models/user-model');
 const MenuModel = require("../models/menu-model");
+const OrderModel = require("../models/order-model");
 
 getMenu = async(req,res) => {
-    await UserModel.find({},(err,menuItems) => {
+    await MenuModel.find({},(err,menuItems) => {
         if(err){
             return res.status(400).json({success:false, error:err})
         }
@@ -12,78 +13,77 @@ getMenu = async(req,res) => {
                 error: "No items found"
             })
         }
-
         return res.status(200).json({
             success: true,
-            data: menuItems
+            data: menuItems.filter((item)=> item.stock!=0)
         })
     }).catch(err => console.log(err))
 }
 
-placeOrder = () => {
-
-}
-
-login = async(req,res) => {
-    const {email,password} = req.body;
-    await UserModel.findOne({email},(err,user) => {
+placeOrder = (req,res) => {
+    const {email,orderedItems} = req.body;
+    const newOrder = new OrderModel({
+        email,
+        orderedItems
+    })
+    newOrder.save((err,order) => {
         if(err){
             return res.status(400).json({success:false, error:err})
         }
-        else if(!user){
+        else if(!order){
             return res.status(404).json({
                 success: false,
-                error: "User not found"
-            })
-        }
-        else if(user.password !== password){
-            return res.status(404).json({
-                success: false,
-                error: "Password incorrect"
+                error: "No items found"
             })
         }
         return res.status(200).json({
             success: true,
-            data: user
+            data: order
         })
-    }
-).catch(err => console.log(err))}
+    })
+}
 
-register = async(req,res) => {
+login = (req,res) => {
+    const {email,password} = req.body;
+    UserModel.findOne({email},(err,user) => {
+        if(err){
+            return res.status(400).json({success:false, error:err})
+        }
+        else if(!user){
+            return res.status(404).json({success: false,error: "User not found"})
+        }
+        else if(user.password !== password){
+            return res.status(404).json({success: false,error: "Password incorrect"})
+        }
+        return res.status(200).json({success: true,data: user})
+}).catch(err => console.log(err))}
+
+register = (req,res) => {
     const {name,email,phoneno,password} = req.body;
-    await UserModel.findOne({email},(err,user) => {
+    UserModel.findOne({email},(err,user) => {
         if(err){
             return res.status(400).json({success:false, error:err})
         }
         else if(user){
-            return res.status(404).json({
-                success: false,
-                error: "User already exists"
-            })
+            return res.status(404).json({success: false,error: "User already exists"})
         }
         else{
-            const user = new UserModel({
-                name,
-                email,
-                phoneno,
-                password
-            })
+            const user = new UserModel({name,email,phoneno,password})
             user.save((err,user) => {
                 if(err){
                     return res.status(400).json({success:false, error:err})
                 }
                 else{
-                    return res.status(200).json({
-                        success: true,
-                        data: user
-                    })
+                    return res.status(200).json({success: true,data: user})
                 }
-            }).catch(err => console.log(err))
+            })
         }
     }
-).catch(err => console.log(err))}
+)}
 
 module.exports = {
     getMenu,
-    placeOrder
+    placeOrder,
+    login,
+    register
 };
